@@ -46,16 +46,28 @@ void PassThrough::prepareInterface() {
     registerStream("in_cloud_xyz", &in_cloud_xyz);
     registerStream("in_cloud_xyzrgb", &in_cloud_xyzrgb);
     registerStream("in_cloud_xyzsift", &in_cloud_xyzsift);
+    registerStream("in_cloud_xyzshot", &in_cloud_xyzshot);
     registerStream("out_cloud_xyz", &out_cloud_xyz);
     registerStream("out_cloud_xyzrgb", &out_cloud_xyzrgb);
     registerStream("out_cloud_xyzsift", &out_cloud_xyzsift);
+    registerStream("out_cloud_xyzshot", &out_cloud_xyzshot);
     // Register handlers
     registerHandler("filter_xyz", boost::bind(&PassThrough::filter_xyz, this));
     addDependency("filter_xyz", &in_cloud_xyz);
+
     registerHandler("filter_xyzrgb", boost::bind(&PassThrough::filter_xyzrgb, this));
     addDependency("filter_xyzrgb", &in_cloud_xyzrgb);
+
     registerHandler("filter_xyzsift", boost::bind(&PassThrough::filter_xyzsift, this));
     addDependency("filter_xyzsift", &in_cloud_xyzsift);
+
+    registerHandler("filter_xyzshot", boost::bind(&PassThrough::filter_xyzshot, this));
+    addDependency("filter_xyzshot", &in_cloud_xyzshot);
+
+    registerHandler("filter_xyz_rgb_shot_sift", boost::bind(&PassThrough::filter_xyz_rgb_shot_sift, this));
+    addDependency("filter_xyz_rgb_shot_sift", &in_cloud_xyzshot);
+    addDependency("filter_xyz_rgb_shot_sift", &in_cloud_xyzsift);
+    addDependency("filter_xyz_rgb_shot_sift", &in_cloud_xyzrgb);
 }
 
 bool PassThrough::onInit() {
@@ -76,7 +88,7 @@ bool PassThrough::onStart() {
 }
 
 void PassThrough::filter_xyz() {
-    LOG(LTRACE) <<"PassThrough::filter_xyz()";
+    LOG(LWARNING) <<"PassThrough::filter_xyz()";
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud = in_cloud_xyz.read();
     pcl::PassThrough<pcl::PointXYZ> pass;
     pass.setInputCloud (cloud);
@@ -96,7 +108,7 @@ void PassThrough::filter_xyz() {
 }
 
 void PassThrough::filter_xyzrgb() {
-    LOG(LTRACE) <<"PassThrough::filter_xyzrgb()";
+    LOG(LWARNING) <<"PassThrough::filter_xyzrgb()";
     pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud = in_cloud_xyzrgb.read();
     pcl::PassThrough<pcl::PointXYZRGB> pass;
     pass.setInputCloud (cloud);
@@ -112,18 +124,52 @@ void PassThrough::filter_xyzrgb() {
     pass.setFilterLimits (za, zb);
     pass.setFilterLimitsNegative (negative_z);
     pass.filter (*cloud);
+    LOG(LWARNING) <<"PassThrough::filter_xyzrgb.size()" << cloud->size();
     out_cloud_xyzrgb.write(cloud);
 }
 
+void PassThrough::filter_xyz_rgb_shot_sift() {
+     LOG(LWARNING) <<"PassThrough::filter_xyz_rgb_shot_sift()";
+    filter_xyzsift();
+    filter_xyzrgb();
+    filter_xyzshot();
+}
+
 void PassThrough::filter_xyzsift() {
-    LOG(LTRACE) <<"PassThrough::filter_xyzsift()";
+    LOG(LWARNING) <<"PassThrough::filter_xyzsift()";
         pcl::PointCloud<PointXYZSIFT>::Ptr cloud = in_cloud_xyzsift.read();
 
         applyFilter(cloud, *cloud, "x", xa, xb, negative_x);
         applyFilter(cloud, *cloud, "y", ya, yb, negative_y);
         applyFilter(cloud, *cloud, "z", za, zb, negative_z);
+        LOG(LWARNING) <<"PassThrough::filter_xyzsift().size()" << cloud->size();
         out_cloud_xyzsift.write(cloud);
 }
+
+void PassThrough::filter_xyzshot() {
+    LOG(LWARNING) <<"PassThrough::filter_xyzshot()";
+        pcl::PointCloud<PointXYZSHOT>::Ptr cloud = in_cloud_xyzshot.read();
+
+        pcl::PointCloud<PointXYZSHOT>::iterator it = cloud->begin();
+        while (it != cloud->end()) {
+            float x = it->x;
+            float y = it->y;
+            float z = it->z;
+
+            bool x_in_limit = x < xb && x > xa;
+            bool y_in_limit = y < yb && y > ya;
+            bool z_in_limit = z < zb && z > za;
+
+            if (x_in_limit == negative_x || y_in_limit == negative_y || z_in_limit == negative_z) {
+                it = cloud->erase(it);
+            } else {
+                it++;
+            }
+        }
+        LOG(LWARNING) <<"PassThrough::filter_xyzshot().size()" << cloud->size();
+        out_cloud_xyzshot.write(cloud);
+}
+
 
 void PassThrough::applyFilter (pcl::PointCloud<PointXYZSIFT>::Ptr input, pcl::PointCloud<PointXYZSIFT> &output, std::string filter_field_name, float min, float max, bool negative)
 {

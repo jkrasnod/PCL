@@ -82,7 +82,7 @@ void CloudTransformer::transform_clouds() {
 
 
 void CloudTransformer::transform_xyz(Types::HomogMatrix hm_) {
-    CLOG(LTRACE) << "CloudTransformer::transform_xyz()";
+    CLOG(LWARNING) << "CloudTransformer::transform_xyz()";
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud = in_cloud_xyz.read();
     Eigen::Matrix4f trans = hm_.getElements();
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud2(new pcl::PointCloud<pcl::PointXYZ>());
@@ -91,7 +91,7 @@ void CloudTransformer::transform_xyz(Types::HomogMatrix hm_) {
 }
 
 void CloudTransformer::transform_xyzrgb(Types::HomogMatrix hm_) {
-    CLOG(LTRACE) << "CloudTransformer::transform_xyzrgb()";
+    CLOG(LWARNING) << "CloudTransformer::transform_xyzrgb()";
     pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud = in_cloud_xyzrgb.read();
     Eigen::Matrix4f trans = hm_.getElements();
     pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud2(new pcl::PointCloud<pcl::PointXYZRGB>());
@@ -100,7 +100,7 @@ void CloudTransformer::transform_xyzrgb(Types::HomogMatrix hm_) {
 }
 
 void CloudTransformer::transform_xyzsift(Types::HomogMatrix hm_) {
-    CLOG(LTRACE) << "CloudTransformer::transform_xyzsift()";
+    CLOG(LWARNING) << "CloudTransformer::transform_xyzsift()";
     pcl::PointCloud<PointXYZSIFT>::Ptr cloud = in_cloud_xyzsift.read();
     Eigen::Matrix4f trans = hm_.getElements();
     pcl::PointCloud<PointXYZSIFT>::Ptr cloud2(new pcl::PointCloud<PointXYZSIFT>());
@@ -109,7 +109,7 @@ void CloudTransformer::transform_xyzsift(Types::HomogMatrix hm_) {
 }
 
 void CloudTransformer::transform_xyzshot(Types::HomogMatrix hm_) {
-    CLOG(LTRACE) << "CloudTransformer::transform_xyzshot()";
+    CLOG(LWARNING) << "CloudTransformer::transform_xyzshot()";
     pcl::PointCloud<PointXYZSHOT>::Ptr cloud = in_cloud_xyzshot.read();
     Eigen::Matrix4f trans = hm_.getElements();
     pcl::PointCloud<PointXYZSHOT>::Ptr cloud2(new pcl::PointCloud<PointXYZSHOT>());

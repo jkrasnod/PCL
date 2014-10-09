@@ -16,6 +16,7 @@
 #include <pcl/point_types.h>
 #include <pcl/filters/passthrough.h>
 #include <Types/PointXYZSIFT.hpp>
+#include <Types/PointXYZSHOT.hpp>
 
 namespace Processors {
 namespace PassThrough {
@@ -72,11 +73,14 @@ protected:
         Base::DataStreamIn<pcl::PointCloud<pcl::PointXYZ>::Ptr> in_cloud_xyz;
         Base::DataStreamIn<pcl::PointCloud<pcl::PointXYZRGB>::Ptr> in_cloud_xyzrgb;
         Base::DataStreamIn<pcl::PointCloud<PointXYZSIFT>::Ptr> in_cloud_xyzsift;
+        Base::DataStreamIn<pcl::PointCloud<PointXYZSHOT>::Ptr> in_cloud_xyzshot;
+
 
     // Output data streams
         Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZ>::Ptr> out_cloud_xyz;
         Base::DataStreamOut<pcl::PointCloud<pcl::PointXYZRGB>::Ptr> out_cloud_xyzrgb;
         Base::DataStreamOut<pcl::PointCloud<PointXYZSIFT>::Ptr> out_cloud_xyzsift;
+        Base::DataStreamOut<pcl::PointCloud<PointXYZSHOT>::Ptr> out_cloud_xyzshot;
 
         //Properties
         Base::Property<float> xa;
@@ -94,9 +98,16 @@ protected:
         void filter_xyz();
         void filter_xyzrgb();
         void filter_xyzsift();
+        void filter_xyzshot();
+        void filter_xyz_rgb_shot_sift();
+
 
         void applyFilter (pcl::PointCloud<PointXYZSIFT>::Ptr input, pcl::PointCloud<PointXYZSIFT> &output, std::string filter_field_name, float min, float max, bool negative);
         void applyFilterIndices (std::vector<int> &indices, pcl::PointCloud<PointXYZSIFT>::Ptr input, std::string filter_field_name, float min, float max, bool negative);
+
+
+        void applyFilterSHOT (pcl::PointCloud<PointXYZSIFT>::Ptr input, pcl::PointCloud<PointXYZSHOT> &output, std::string filter_field_name, float min, float max, bool negative);
+        void applyFilterIndicesSHOT (std::vector<int> &indices, pcl::PointCloud<PointXYZSHOT>::Ptr input, std::string filter_field_name, float min, float max, bool negative);
 
 };
 
