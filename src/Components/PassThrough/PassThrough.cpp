@@ -88,8 +88,9 @@ bool PassThrough::onStart() {
 }
 
 void PassThrough::filter_xyz() {
-    LOG(LWARNING) <<"PassThrough::filter_xyz()";
+    LOG(LTRACE) <<"PassThrough::filter_xyz()";
     pcl::PointCloud<pcl::PointXYZ>::Ptr cloud = in_cloud_xyz.read();
+    long size = cloud->size();
     pcl::PassThrough<pcl::PointXYZ> pass;
     pass.setInputCloud (cloud);
     pass.setFilterFieldName ("x");
@@ -104,12 +105,14 @@ void PassThrough::filter_xyz() {
     pass.setFilterLimits (za, zb);
     pass.setFilterLimitsNegative (negative_z);
     pass.filter (*cloud);
+
     out_cloud_xyz.write(cloud);
 }
 
 void PassThrough::filter_xyzrgb() {
-    LOG(LWARNING) <<"PassThrough::filter_xyzrgb()";
+    LOG(LTRACE) <<"PassThrough::filter_xyzrgb()";
     pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud = in_cloud_xyzrgb.read();
+    long size = cloud->size();
     pcl::PassThrough<pcl::PointXYZRGB> pass;
     pass.setInputCloud (cloud);
     pass.setFilterFieldName ("x");
@@ -124,31 +127,33 @@ void PassThrough::filter_xyzrgb() {
     pass.setFilterLimits (za, zb);
     pass.setFilterLimitsNegative (negative_z);
     pass.filter (*cloud);
-    LOG(LWARNING) <<"PassThrough::filter_xyzrgb.size()" << cloud->size();
+    CLOG(LTRACE) << "PassThrough::filter_xyzrgb\t" << ((double)(cloud->size())) / (double)size;
     out_cloud_xyzrgb.write(cloud);
 }
 
 void PassThrough::filter_xyz_rgb_shot_sift() {
-     LOG(LWARNING) <<"PassThrough::filter_xyz_rgb_shot_sift()";
+     LOG(LTRACE) <<"PassThrough::filter_xyz_rgb_shot_sift()";
     filter_xyzsift();
     filter_xyzrgb();
     filter_xyzshot();
 }
 
 void PassThrough::filter_xyzsift() {
-    LOG(LWARNING) <<"PassThrough::filter_xyzsift()";
-        pcl::PointCloud<PointXYZSIFT>::Ptr cloud = in_cloud_xyzsift.read();
+    LOG(LTRACE) <<"PassThrough::filter_xyzsift()";
 
+        pcl::PointCloud<PointXYZSIFT>::Ptr cloud = in_cloud_xyzsift.read();
+        long size = cloud->size();
         applyFilter(cloud, *cloud, "x", xa, xb, negative_x);
         applyFilter(cloud, *cloud, "y", ya, yb, negative_y);
         applyFilter(cloud, *cloud, "z", za, zb, negative_z);
-        LOG(LWARNING) <<"PassThrough::filter_xyzsift().size()" << cloud->size();
+        LOG(LTRACE) << "PassThrough::filter_xyzsift\t" << ((double)(cloud->size())) / (double)size;
         out_cloud_xyzsift.write(cloud);
 }
 
 void PassThrough::filter_xyzshot() {
-    LOG(LWARNING) <<"PassThrough::filter_xyzshot()";
+    LOG(LTRACE) <<"PassThrough::filter_xyzshot()";
         pcl::PointCloud<PointXYZSHOT>::Ptr cloud = in_cloud_xyzshot.read();
+        long size = cloud->size();
 
         pcl::PointCloud<PointXYZSHOT>::iterator it = cloud->begin();
         while (it != cloud->end()) {
@@ -166,7 +171,7 @@ void PassThrough::filter_xyzshot() {
                 it++;
             }
         }
-        LOG(LWARNING) <<"PassThrough::filter_xyzshot().size()" << cloud->size();
+        LOG(LTRACE) << "PassThrough::filter_xyzshot\t" << ((double)(cloud->size())) / (double)size;
         out_cloud_xyzshot.write(cloud);
 }
 
@@ -222,7 +227,7 @@ void PassThrough::applyFilterIndices (std::vector<int> &indices, pcl::PointCloud
         int distance_idx = pcl::getFieldIndex (*input, filter_field_name, fields);
         if (distance_idx == -1)
         {
-            CLOG(LWARNING) << "PassThrough::applyFilterIndices Unable to find field name in point type.";
+            CLOG(LTRACE) << "PassThrough::applyFilterIndices Unable to find field name in point type.";
             indices.clear ();
             return;
         }

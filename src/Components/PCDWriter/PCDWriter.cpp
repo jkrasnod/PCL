@@ -68,7 +68,7 @@ bool PCDWriter::onStart() {
 }
 
 void PCDWriter::onTriggeredLoadNextCloud(){
-    CLOG(LDEBUG) << "PCDWriter::onTriggeredLoadNextCloud";
+    CLOG(LWARNING) << "PCDWriter::onTriggeredLoadNextCloud";
     in_trigger.read();
     if(!in_cloud_xyz.empty())
         Write_xyz();
@@ -79,7 +79,7 @@ void PCDWriter::onTriggeredLoadNextCloud(){
 }
 
 void PCDWriter::Write_xyz() {
-    CLOG(LTRACE) << "PCDWriter::Write_xyz";
+    CLOG(LWARNING) << "PCDWriter::Write_xyz";
 	pcl::PointCloud<pcl::PointXYZ>::Ptr cloud = in_cloud_xyz.read();
     std::string fn = filename;
     if(suffix){
@@ -96,7 +96,7 @@ void PCDWriter::Write_xyz() {
 
 
 void PCDWriter::Write_xyzrgb() {
-	CLOG(LTRACE) << "PCDWriter::Write_xyzrgb";
+	CLOG(LWARNING) << "PCDWriter::Write_xyzrgb";
 	pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud = in_cloud_xyzrgb.read();
     std::string fn = filename;
     if(suffix){
@@ -112,7 +112,7 @@ void PCDWriter::Write_xyzrgb() {
 
 
 void PCDWriter::Write_xyzsift() {
-	CLOG(LTRACE) << "PCDWriter::Write_xyzsift";
+	CLOG(LWARNING) << "PCDWriter::Write_xyzsift";
 	pcl::PointCloud<PointXYZSIFT>::Ptr cloud = in_cloud_xyzsift.read();
     std::string fn = filename;
     if(suffix){
