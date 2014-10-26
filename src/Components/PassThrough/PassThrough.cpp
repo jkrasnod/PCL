@@ -227,7 +227,7 @@ void PassThrough::applyFilterIndices (std::vector<int> &indices, pcl::PointCloud
         int distance_idx = pcl::getFieldIndex (*input, filter_field_name, fields);
         if (distance_idx == -1)
         {
-            CLOG(LTRACE) << "PassThrough::applyFilterIndices Unable to find field name in point type.";
+            CLOG(LWARNING) << "PassThrough::applyFilterIndices Unable to find field name in point type.";
             indices.clear ();
             return;
         }
